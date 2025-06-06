@@ -1,44 +1,57 @@
-import React, { useEffect, useState, useContext } from "react";
-import axios from "axios";
+import React, { useEffect, useContext } from "react";
 import { AppContext } from "../App";
-import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import "./Product.css";
 
 export default function Product() {
-  const { user, addToCart } = useContext(AppContext);
-  const [products, setProducts] = useState([]);
-  const navigate = useNavigate();
+  const { user, products, setProducts, cart, setCart } = useContext(AppContext);
+  const API = import.meta.env.VITE_API_URL;
 
   const fetchProducts = async () => {
-    const res = await axios.get(`https://gcet-node-app-lake.vercel.app/products/all`);
-    setProducts(res.data);
+    try {
+      const res = await axios.get(`${API}/products/all`);
+      console.log("Fetched products:", res.data);
+      // If response has a products field, use res.data.products
+      if (Array.isArray(res.data)) {
+        setProducts(res.data);
+      } else if (Array.isArray(res.data.products)) {
+        setProducts(res.data.products);
+      } else {
+        console.warn("Unexpected response format:", res.data);
+        setProducts([]);
+      }
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      setProducts([]); // fallback to empty array
+    }
   };
 
   useEffect(() => {
     fetchProducts();
   }, []);
 
+  const addToCart = (id) => {
+    if (!cart[id]) {
+      setCart({ ...cart, [id]: 1 });
+    }
+  };
+
   return (
     <div>
-      <h3>Welcome {user.name}!</h3>
+      <h3>Welcome {user?.name || "Guest"}!</h3>
       <div className="App-Product-Row">
-        {products.map((value) => (
-          <div className="product-card" key={value._id}>
-            <img
-              src={value.imgUrl}
-              alt={value.name}
-              className="product-image"
-            />
-            <h3>{value.name}</h3>
-            <h4>₹{value.price}</h4>
-            <button onClick={() => addToCart(value)}>Add to Cart</button>
-          </div>
-        ))}
+        {Array.isArray(products) && products.length > 0 ? (
+          products.map((value) => (
+            <div key={value._id}>
+              <h3>{value.name}</h3>
+              <h4>₹{value.price}</h4>
+              <button onClick={() => addToCart(value.pid)}>Add to Cart</button>
+            </div>
+          ))
+        ) : (
+          <p>No products available.</p>
+        )}
       </div>
-      <br />
-      <button onClick={() => navigate("/cart")} className="btn">
-        🛒 Go to Cart
-      </button>
     </div>
   );
 }
