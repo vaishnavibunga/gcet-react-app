@@ -1,4 +1,10 @@
 import React from "react";
+import '../App.css';
+
 export default function Footer() {
-  return <div> &copy; 2005. All rights Reserved.</div>;
+  return (
+    <footer>
+      &copy; 2025. All rights reserved.
+    </footer>
+  );
 }
