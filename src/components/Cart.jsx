@@ -1,91 +1,97 @@
-import React, { useContext } from "react";
+import React, { useEffect, useState } from "react";
+import { useContext } from "react";
 import { AppContext } from "../App";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import "./Cart.css";
 
 export default function Cart() {
-  const { cart, setCart, user } = useContext(AppContext);
-  const navigate = useNavigate();
+  const { cart, setCart, products, user } = useContext(AppContext);
+  const [orderValue, setOrderValue] = useState(0);
+  const Navigate = useNavigate();
+  const API = import.meta.env.VITE_API_URL;
 
-  const totalOrderValue = cart.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
+  // Calculate order total
+  useEffect(() => {
+    setOrderValue(
+      products.reduce((sum, product) => {
+        return sum + product.price * (cart[product.pid] ?? 0);
+      }, 0)
+    );
+  }, [products, cart]);
 
-  const incrementQty = (index) => {
-    const updatedCart = [...cart];
-    updatedCart[index].quantity += 1;
-    setCart(updatedCart);
+  const increment = (pid) => {
+    setCart((prev) => ({
+      ...prev,
+      [pid]: (prev[pid] || 0) + 1
+    }));
   };
 
-const decrementQty = (index) => {
-  const updatedCart = [...cart];
-  updatedCart[index].quantity -= 1;
+  const decrement = (pid) => {
+    setCart((prev) => ({
+      ...prev,
+      [pid]: Math.max((prev[pid] || 1) - 1, 0)
+    }));
+  };
 
-  if (updatedCart[index].quantity <= 0) {
-    updatedCart.splice(index, 1); // Remove the item completely
+  const placeOrder = async () => {
+  const url = `${API}/orders/new`; // ✅ add `/api/`
+  const payload = {
+    email: user.email,
+    orderValue: orderValue
+  };
+
+  console.log("🔄 Trying to place order to:", url);
+  console.log("📦 Payload:", payload);
+
+  try {
+    const res = await axios.post(url, payload);
+    console.log("✅ Order success:", res.data);
+
+    setCart({});
+    Navigate("/order");
+  } catch (err) {
+    console.error("❌ Order failed:", err.response?.data || err.message);
+    alert("Failed to place order. Please try again.");
   }
-
-  setCart(updatedCart);
 };
 
 
-  const placeOrder = async () => {
-    if (!user || !user.email) {
-      alert("Please login to place your order");
-      navigate("/login");
-      return;
-    }
-
-    try {
-      await axios.post("https://gcet-node-app-lake.vercel.app/orders/new", {
-        email: user.email,
-        orderValue: totalOrderValue,
-        items: cart,
-      });
-
-      setCart([]);
-      navigate("/orders");
-    } catch (err) {
-      console.error("Error placing order", err);
-      alert("Failed to place order");
-    }
+  const loginToOrder = () => {
+    Navigate("/login");
   };
 
   return (
-    <div className="cart-container">
-      <h2 className="cart-title">🛒 My Cart</h2>
-      {cart.length === 0 ? (
-        <p className="cart-empty">Your cart is empty</p>
-      ) : (
-        <>
-          <ul className="cart-list">
-            {cart.map((item, index) => (
-              <li className="cart-item" key={index}>
-                <div className="cart-item-content">
-                  <div>
-                    <h4>{item.name}</h4>
-                    <p>Price: ₹{item.price}</p>
-                    <p>Subtotal: ₹{(item.price * item.quantity).toFixed(2)}</p>
-                  </div>
-                  <div className="qty-controls">
-                    <button onClick={() => decrementQty(index)}>-</button>
-                    <span>{item.quantity}</span>
-                    <button onClick={() => incrementQty(index)}>+</button>
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ul>
-          <div className="cart-total">
-            <h3>Total: ₹{totalOrderValue.toFixed(2)}</h3>
-            <button className="btn-order" onClick={placeOrder}>
-              ✅ Place Order
-            </button>
-          </div>
-        </>
-      )}
+    <div>
+      <h2>My Cart</h2>
+      {products &&
+        products.map(
+          (product) =>
+            cart[product.pid] > 0 && (
+              <div key={product.pid}>
+                {product.pid} - {product.name} - ₹{product.price} -
+                <button onClick={() => decrement(product.pid)}>-</button>
+                {cart[product.pid]}
+                <button onClick={() => increment(product.pid)}>+</button>
+                = ₹{product.price * cart[product.pid]}
+              </div>
+            )
+        )}
+      <hr />
+      <h3>Order Value: ₹{orderValue}</h3>
+      <hr />
+      {user.name ? (
+  <button onClick={() => {
+    console.log("🟢 Button clicked");
+    placeOrder();
+  }}>Place Order</button>
+) : (
+  <button onClick={() => {
+    console.log("🟠 Login button clicked");
+    loginToOrder();
+  }}>Login to Order</button>
+)}
+
+      <hr />
     </div>
   );
 }
