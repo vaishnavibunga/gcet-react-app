@@ -17,7 +17,7 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const API = import.meta.env.VITE_API_URL; // e.g. http://localhost:5000/api
+  const API = import.meta.env.VITE_API_URL="https://gcet-node-app-seven.vercel.app/"; // e.g. http://localhost:5000/api
 
   const handleChange = (e) => {
     const { name, value } = e.target;
