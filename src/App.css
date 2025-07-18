@@ -1,0 +1,31 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&display=swap');
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: 'Playfair Display', serif;
+  background: linear-gradient(to bottom right, #fdf6e3, #fce8c3); /* beige to soft yellow */
+  color: #5b3a29; /* elegant deep brown */
+}
+
+/* Wrapper for the whole app */
+.app-main-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(to top left, #fff8e7, #f3e6d0); /* subtle beige gradient */
+}
+
+/* Centered content container */
+.app-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background-color: rgba(255, 250, 235, 0.5); /* light beige with transparency */
+}
+
+

@@ -1,0 +1,82 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&display=swap');
+
+:root {
+  font-family: 'Playfair Display', serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: #5b3a29; /* deep brown text */
+  background-color: #fdf6e3; /* warm beige */
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  font-weight: 500;
+  color: #c29500; /* rich mustard yellow */
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: #8a5800; /* deep golden brown */
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+  background: linear-gradient(to bottom right, #fff8e7, #fbecc3); /* soft beige-yellow blend */
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+  color: #4b2e20; /* elegant brown */
+}
+
+/* Button styling */
+button {
+  border-radius: 8px;
+  border: 1px solid #d4b483;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #f5deb3; /* wheat/beige */
+  color: #4a3523; /* brown text */
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background-color: #e4c17d;
+  border-color: #caa755;
+}
+
+button:focus,
+button:focus-visible {
+  outline: 3px solid #dec186;
+}
+
+/* Light mode preference */
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #4b2e20;
+    background-color: #fff9ed;
+  }
+
+  a:hover {
+    color: #a46b00;
+  }
+
+  button {
+    background-color: #f7e1b5;
+  }
+}
